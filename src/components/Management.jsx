@@ -44,7 +44,7 @@ const team = [
   },
 ];
 
-const ManagementDuplicate = () => {
+const Management = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const cardsPerView = 3;
 
@@ -121,4 +121,4 @@ const ManagementDuplicate = () => {
   );
 };
 
-export default ManagementDuplicate;
+export default Management;
