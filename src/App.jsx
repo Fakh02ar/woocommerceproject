@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import {  Routes, Route } from 'react-router-dom';
 import './index.css';
 import Navbar from './components/Navbar';
 import Header from './components/Header';
@@ -32,7 +32,7 @@ import Keyboard from './components/Keyboard'; // ✅ Your component
 function App() {
   return (
     <div className="opacity-0 animate-fadeIn">
-      <BrowserRouter>
+      
         <Navbar />
         <Header />
         <Routes>
@@ -83,7 +83,7 @@ function App() {
           />
         </Routes>
         <Footer />
-      </BrowserRouter>
+    
     </div>
   );
 }
