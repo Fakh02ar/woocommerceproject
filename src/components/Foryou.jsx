@@ -1,46 +1,49 @@
 import React from 'react';
-import { Eye } from 'lucide-react';
-import { ShoppingCart } from "lucide-react";
-import laptop from '../assets/laptop.png'
-import led from '../assets/led.png'
-import game from '../assets/game.png'
-import key from '../assets/key.png'
-
-
-
-
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../features/cartSlice';
+import { Eye, ShoppingCart } from 'lucide-react';
+import laptop from '../assets/laptop.png';
+import led from '../assets/led.png';
+import game from '../assets/game.png';
+import key from '../assets/key.png';
 
 const products = [
   {
     id: 1,
     title: 'ASUS FHD Gaming Laptop',
     image: laptop,
-    price: '$960',
-    oldPrice: '$1160',
+    price: 960,
+    originalPrice: 1160,
     badge: '-35%',
   },
   {
     id: 2,
     title: 'IPS LCD Gaming Monitor',
     image: led,
-    price: '$1160',
+    price: 1160,
   },
   {
     id: 3,
     title: 'HAVIT HV-G92 Gamepad',
     image: game,
-    price: '$560',
+    price: 560,
     badge: 'NEW',
   },
   {
     id: 4,
     title: 'AK-900 Wired Keyboard',
-    image:key,
-    price: '$200',
+    image: key,
+    price: 200,
   },
 ];
 
 const Foryou = () => {
+  const dispatch = useDispatch();
+
+  const handleAdd = (product) => {
+    dispatch(addToCart(product));
+  };
+
   return (
     <section className="px-6 py-10">
       <div className="flex justify-between items-center mb-6">
@@ -69,21 +72,25 @@ const Foryou = () => {
                 alt={product.title}
                 className="w-full h-40 object-contain"
               />
-              
               <button className="absolute top-2 right-2 p-1 bg-white rounded-full shadow">
                 <Eye size={18} />
               </button>
             </div>
-            <div className="bg-black hover:bg-[#DB4444] text-white text-sm px-4 py-2 flex items-center justify-center gap-2 cursor-pointer">
-                  <ShoppingCart className="w-4 h-4" /> Add To Cart
-        </div>
+
+            <button
+              onClick={() => handleAdd(product)}
+              className="w-full bg-black hover:bg-[#DB4444] text-white text-sm px-4 py-2 flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <ShoppingCart className="w-4 h-4" /> Add To Cart
+            </button>
+
             <div className="p-4">
               <h3 className="text-sm font-medium">{product.title}</h3>
               <div className="text-red-500 font-semibold">
-                {product.price}{' '}
-                {product.oldPrice && (
+                ${product.price}{' '}
+                {product.originalPrice && (
                   <span className="text-gray-400 line-through ml-2 text-sm">
-                    {product.oldPrice}
+                    ${product.originalPrice}
                   </span>
                 )}
               </div>

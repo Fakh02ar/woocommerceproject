@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Trash2 } from "lucide-react";
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../features/cartSlice';
+import { useNavigate } from 'react-router-dom';
+
 import bag from '../assets/bag.png';
 import sound from '../assets/sound.png';
 import box from '../assets/box.png';
-import jacket from '../assets/jacket.png'; // Make sure this file exists in the 'assets' folder
+import jacket from '../assets/jacket.png';
 
-// Initial wishlist data
 const initialWishlistItems = [
   {
     id: 1,
-    name: "Gucci duffle bag",
+    title: "Gucci duffle bag",
     price: 960,
     originalPrice: 1160,
     image: bag,
@@ -17,19 +20,19 @@ const initialWishlistItems = [
   },
   {
     id: 2,
-    name: "RGB liquid CPU Cooler",
+    title: "RGB liquid CPU Cooler",
     price: 1960,
     image: sound,
   },
   {
     id: 3,
-    name: "GP11 Shooter USB Gamepad",
+    title: "GP11 Shooter USB Gamepad",
     price: 550,
     image: box,
   },
   {
     id: 4,
-    name: "Quilted Satin Jacket",
+    title: "Quilted Satin Jacket",
     price: 750,
     image: jacket,
   },
@@ -37,58 +40,89 @@ const initialWishlistItems = [
 
 const Wishlist = () => {
   const [wishlistItems, setWishlistItems] = useState(initialWishlistItems);
-  const [Cart, setCart] = useState([]); 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  
+  // ❌ Remove item from wishlist
   const removeItemFromWishlist = (id) => {
-    setWishlistItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    setWishlistItems((prev) => prev.filter((item) => item.id !== id));
   };
 
-  
-  const addItemToCart = (item) => {
-    setCart((prevCart) => [...prevCart, item]);
+  // ✅ Add single item to cart
+  const handleAddToCart = (item) => {
+    dispatch(addToCart({
+      id: item.id,
+      title: item.title,
+      price: item.price,
+      image: item.image,
+      quantity: 1,
+      originalPrice: item.originalPrice || null,
+      discount: item.discount || null,
+    }));
+    removeItemFromWishlist(item.id);
+    navigate("/cart");
   };
 
- 
+  // ✅ Move all items to cart
   const moveAllToBag = () => {
-    setCart((prevCart) => [...prevCart, ...wishlistItems]);
-    setWishlistItems([]); 
+    wishlistItems.forEach((item) => {
+      dispatch(addToCart({
+        id: item.id,
+        title: item.title,
+        price: item.price,
+        image: item.image,
+        quantity: 1,
+        originalPrice: item.originalPrice || null,
+        discount: item.discount || null,
+      }));
+    });
+    setWishlistItems([]);
+    navigate("/cart");
   };
 
   return (
     <div className="p-6 space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold">Wishlist ({wishlistItems.length})</h2>
-        <button
-          onClick={moveAllToBag}
-          className="border border-gray-300 px-4 py-2 rounded-lg hover:bg-[#DB4444] hover:text-white transition"
-        >
-          Move All To Bag
-        </button>
+        {wishlistItems.length > 0 && (
+          <button
+            onClick={moveAllToBag}
+            className="border border-gray-300 px-4 py-2 rounded-lg hover:bg-[#DB4444] hover:text-white transition"
+          >
+            Move All To Bag
+          </button>
+        )}
       </div>
+
+      {/* Wishlist Items */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
         {wishlistItems.map((item) => (
           <div key={item.id} className="rounded-2xl overflow-hidden">
-            <div className="relative bg-[#F5F5F5] p-4 flex justify-center items-center h-48">
+            <div className="relative p-4 flex justify-center items-center h-48 bg-[#F5F5F5]">
               {item.discount && (
                 <span className="absolute top-2 left-2 bg-[#DB4444] text-white text-xs px-2 py-1 rounded">
                   {item.discount}
                 </span>
               )}
-              <img src={item.image} alt={item.name} className="h-40 object-contain" />
+              <img src={item.image} alt={item.title} className="h-40 object-contain" />
               <Trash2
                 onClick={() => removeItemFromWishlist(item.id)}
                 className="absolute top-2 bg-white right-2 w-4 h-4 text-[#000] hover:text-red-500 cursor-pointer"
               />
             </div>
-            <div
-              onClick={() => addItemToCart(item)}
-              className="bg-black hover:bg-[#DB4444] text-white text-sm px-4 py-2 flex items-center justify-center gap-2 cursor-pointer"
+
+            {/* Add to Cart Button */}
+            <button
+              onClick={() => handleAddToCart(item)}
+              className="w-full bg-black hover:bg-[#DB4444] text-white text-sm px-4 py-2 flex items-center justify-center gap-2"
             >
-              <ShoppingCart className="w-4 h-4" /><a href="/cart">Add To Cart</a> 
-            </div>
+              <ShoppingCart className="w-4 h-4" />
+              Add To Cart
+            </button>
+
             <div className="p-4">
-              <p className="text-sm font-medium">{item.name}</p>
+              <p className="text-sm font-medium">{item.title}</p>
               <div className="text-red-600 font-semibold">
                 ${item.price.toLocaleString()}
                 {item.originalPrice && (

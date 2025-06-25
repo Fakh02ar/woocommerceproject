@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Heart, Eye } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../features/cartSlice";
+import { useNavigate } from "react-router-dom";
+
 import game from "../assets/game.png";
 import key from "../assets/key.png";
 import led from "../assets/led.png";
@@ -50,8 +54,9 @@ const products = [
 
 const Today = () => {
   const countdownTarget = new Date().getTime() + 3 * 24 * 60 * 60 * 1000;
-
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -73,7 +78,7 @@ const Today = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [countdownTarget]); 
+  }, [countdownTarget]);
 
   return (
     <div className="py-6 xl:max-w-[1200px] lg:max-w-[980px] md:max-w-[750px] m-auto px-3 mt-20 border-b border-gray-200 pb-12">
@@ -87,24 +92,18 @@ const Today = () => {
         <div className="flex gap-2 items-center text-sm text-black">
           <div className="text-black text-xl font-bold">Days</div>
           <div className="text-xl font-bold">{String(timeLeft.days).padStart(2, "0")}</div>
-          <div className="text-xl font-bold"> <span className="text-red-500">:</span></div>
+          <div className="text-xl font-bold"><span className="text-red-500">:</span></div>
           <div className="text-xl font-bold">{String(timeLeft.hours).padStart(2, "0")}</div>
-          <div className="text-xl font-bold"> <span className="text-red-500">:</span></div>
+          <div className="text-xl font-bold"><span className="text-red-500">:</span></div>
           <div className="text-xl font-bold">{String(timeLeft.minutes).padStart(2, "0")}</div>
-          <div className="text-xl font-bold"> <span className="text-red-500">:</span></div>
+          <div className="text-xl font-bold"><span className="text-red-500">:</span></div>
           <div className="text-xl font-bold">{String(timeLeft.seconds).padStart(2, "0")}</div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {products.map((product) => (
-          <div
-            key={product.id}
-            className="relative rounded-lg overflow-hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
+          <div key={product.id} className="relative rounded-lg overflow-hidden">
             <div className="absolute top-2 left-2 bg-[#DB4444] text-white text-xs px-2 py-1 rounded">
               -{product.discount}%
             </div>
@@ -114,18 +113,25 @@ const Today = () => {
             </div>
 
             <div className="flex justify-center bg-[#F5F5F5] transform transition-transform duration-500 hover:scale-110 cursor-pointer">
-              <a href="/productdetail"><img
-                src={product.image}
-                alt={product.title}
-                className="w-full h-40 object-contain p-4 "
-              /></a>
+              <a href="/productdetail">
+                <img
+                  src={product.image}
+                  alt={product.title}
+                  className="w-full h-40 object-contain p-4"
+                />
+              </a>
             </div>
 
-            <a href="/cart">
-              <button className="mt-1 w-full bg-[#000] text-white py-2 rounded hover:bg-[#DB4444] cursor-pointer">
-                Add To Cart
-              </button>
-            </a>
+            {/* ✅ Add to Cart Button */}
+            <button
+              onClick={() => {
+                dispatch(addToCart({ ...product, quantity: 1 }));
+                navigate("/cart");
+              }}
+              className="mt-1 w-full bg-[#000] text-white py-2 rounded hover:bg-[#DB4444] cursor-pointer"
+            >
+              Add To Cart
+            </button>
 
             <div className="pt-2">
               <h3 className="text-sm font-semibold mb-1">{product.title}</h3>
@@ -143,10 +149,10 @@ const Today = () => {
       </div>
 
       <div className="flex justify-center mt-6">
-        <a href="/wishlist"><button className="bg-[#DB4444] cursor-pointer hover:bg-[#000] text-white py-2 px-4 rounded">
-          
-          View All Products
-        </button>
+        <a href="/wishlist">
+          <button className="bg-[#DB4444] cursor-pointer hover:bg-[#000] text-white py-2 px-4 rounded">
+            View All Products
+          </button>
         </a>
       </div>
     </div>
