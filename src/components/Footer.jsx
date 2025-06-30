@@ -1,6 +1,6 @@
 import React from "react";
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa";
-import QR from '../assets/Qr.jpeg'
+import Qr from '../assets/Qr.jpeg'
 import play from '../assets/play.png'
 // import store from '../assets/store.png'
 import  Icon  from '../assets/icon-send.png';
@@ -63,7 +63,7 @@ const Footer = () => {
           <h3 className="text-lg font-semibold mb-4">Download App</h3>
           <p className="text-sm mb-4">Save $3 with App New User Only</p>
           <div className="flex items-start space-x-3 mb-4">
-  <img src={QR} className="w-16 h-16 border border-white" />
+  <img src={Qr} className="w-16 h-16 border border-white" />
   <div className="flex flex-col justify-between h-16">
     <img src={play} alt="Google Play" className="w-[104px] h-[100px]" />
    

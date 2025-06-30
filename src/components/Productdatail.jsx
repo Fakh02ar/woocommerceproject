@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Heart, Plus, Minus, Star } from 'lucide-react';
 import red from '../assets/game.png';  
 import box1 from '../assets/box1.png';    
+import Navbar from './Navbar';
+import Footer from './Footer';
 
 const Productdatail = () => {
   const [quantity, setQuantity] = useState(2);
@@ -21,6 +23,8 @@ const Productdatail = () => {
   };
 
   return (
+    <>
+    <Navbar />
     <div className="grid grid-cols-1 md:grid-cols-2 gap-10 p-8 max-w-[1200px] mx-auto">
       {/* Left - Main Image */}
       <div className="flex justify-center">
@@ -119,6 +123,8 @@ const Productdatail = () => {
         </div>
       </div>
     </div>
+    <Footer />
+    </>
   );
 };
 

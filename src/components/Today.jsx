@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import game from "../assets/game.png";
 import key from "../assets/key.png";
 import led from "../assets/led.png";
-import Chair from "../assets/chair.png";
+import chair from "../assets/chair.png";
 
 const products = [
   {
@@ -48,7 +48,7 @@ const products = [
     discount: 25,
     rating: 4.5,
     reviews: 99,
-    image: Chair,
+    image: chair,
   },
 ];
 
@@ -122,7 +122,7 @@ const Today = () => {
               </a>
             </div>
 
-            {/* ✅ Add to Cart Button */}
+        
             <button
               onClick={() => {
                 dispatch(addToCart({ ...product, quantity: 1 }));
