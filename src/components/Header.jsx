@@ -2,7 +2,7 @@ import React from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { FaRegHeart, FaHeart, FaRegUser, FaUser, FaShoppingCart } from 'react-icons/fa';
 import { useLocation, Link } from 'react-router-dom';
-import exclu from '../assets/exclu.png'
+
 const Header = () => {
   const location = useLocation();
 
@@ -16,7 +16,7 @@ const Header = () => {
         {/* Logo */}
 
         <a href="/"className="text-[24px] font-inter font-bold">
-        <img src={exclu} alt="logo" className="w-10 h-10" />
+        Exclusive
         </a>
 
         {/* Nav links */}
