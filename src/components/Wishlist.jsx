@@ -115,7 +115,7 @@ const Wishlist = () => {
             {/* Add to Cart Button */}
             <button
               onClick={() => handleAddToCart(item)}
-              className="w-full bg-black hover:bg-[#DB4444] text-white text-sm px-4 py-2 flex items-center justify-center gap-2"
+              className="w-full bg-black cursor-pointer hover:bg-[#DB4444] text-white text-sm px-4 py-2 flex items-center justify-center gap-2"
             >
               <ShoppingCart className="w-4 h-4" />
               Add To Cart

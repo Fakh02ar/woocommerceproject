@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { addToCart } from '../features/cartSlice';
 import { Eye, ShoppingCart } from 'lucide-react';
 import laptop from '../assets/laptop.png';
@@ -39,9 +40,11 @@ const products = [
 
 const Foryou = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleAdd = (product) => {
     dispatch(addToCart(product));
+    navigate('/cart'); // Navigate to cart after adding
   };
 
   return (

@@ -8,13 +8,14 @@ const Header = () => {
 
   const isProfileActive = location.pathname === '/profile';
   const isCartActive = location.pathname === '/cart';
-  const isWishlistActive = location.pathname === '/wishlist'; // assuming this path
+  const isWishlistActive = location.pathname === '/wishlist'; 
 
   return (
     <header className="bg-white py-4 font-poppins border-b border-[#ebebeb]">
       <div className="xl:max-w-[1200px] lg:max-w-[980px] mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
-        <h1 className="text-[24px] font-inter font-bold">Exclusive</h1>
+
+        <a href="/"className="text-[24px] font-inter font-bold">Exclusive</a>
 
         {/* Nav links */}
         <nav className="hidden lg:flex gap-12 text-sm font-medium">

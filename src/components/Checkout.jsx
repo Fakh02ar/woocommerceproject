@@ -3,12 +3,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import { clearCart } from '../features/cartSlice'; // Make sure path is correct
 
 const Checkout = () => {
-  const cartItems = useSelector((state) => state.cart.cartItems); // ✅ correct
+  const cartItems = useSelector((state) => state.cart.cartItems);
   const dispatch = useDispatch();
-  const [coupon, setCoupon] = useState('');
-  const [discount, setDiscount] = useState(0);
 
-  // ✅ Log cartItems on load for debugging
+  const [discount, setDiscount] = useState(0);
+  const [paymentMethod, setPaymentMethod] = useState('cod');
+
   useEffect(() => {
     console.log('🛒 Checkout Page - cartItems from Redux:', cartItems);
   }, [cartItems]);
@@ -40,7 +40,12 @@ const Checkout = () => {
       return;
     }
 
-    alert('✅ Order placed successfully!');
+    if (paymentMethod === 'online') {
+      alert('💳 Online payment processed! (Demo)');
+    } else {
+      alert('✅ Order placed with Cash on Delivery!');
+    }
+
     dispatch(clearCart());
   };
 
@@ -137,27 +142,52 @@ const Checkout = () => {
               </div>
             </div>
 
-            {/* Payment & Coupon */}
-            <div>
+            {/* Payment Options */}
+            <div className="space-y-2">
               <label className="flex items-center gap-2">
-                <input type="radio" name="pay" defaultChecked />
-                Cash on delivery
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="cod"
+                  checked={paymentMethod === 'cod'}
+                  onChange={() => setPaymentMethod('cod')}
+                />
+                Cash on Delivery
               </label>
-            </div>
 
-            <div className="flex items-center gap-2">
-              <input
-                value={coupon}
-                onChange={(e) => setCoupon(e.target.value)}
-                placeholder="Coupon Code"
-                className="w-[50%] p-2 border rounded"
-              />
-              <button
-                onClick={applyCoupon}
-                className="bg-[#DB4444] text-white px-4 py-2 rounded"
-              >
-                Apply Coupon
-              </button>
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="online"
+                  checked={paymentMethod === 'online'}
+                  onChange={() => setPaymentMethod('online')}
+                />
+                Pay Online
+              </label>
+
+              {paymentMethod === 'online' && (
+                <div className="bg-[#f5f5f5] p-4 rounded space-y-3">
+                  <p className="text-sm text-gray-600">* This is a demo. No real payment processing connected.</p>
+                  <input
+                    type="text"
+                    placeholder="Card Number"
+                    className="w-full p-2 rounded bg-white border"
+                  />
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="MM/YY"
+                      className="w-1/2 p-2 rounded bg-white border"
+                    />
+                    <input
+                      type="text"
+                      placeholder="CVV"
+                      className="w-1/2 p-2 rounded bg-white border"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             <button
