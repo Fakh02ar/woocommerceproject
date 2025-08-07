@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { clearCart } from '../features/cartSlice';
-
-import { db } from '../firebase'; // ✅ Firebase config
+import { db } from '../firebase';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 
 const Checkout = () => {
@@ -13,9 +12,22 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState('cod');
   const [coupon, setCoupon] = useState('');
 
-  useEffect(() => {
-    console.log('🛒 Checkout Page - cartItems from Redux:', cartItems);
-  }, [cartItems]);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    companyName: '',
+    streetAddress: '',
+    apartment: '',
+    city: '',
+    phone: '',
+    email: '',
+  });
+
+  const handleInputChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
   const getSubtotal = (item) => {
     const quantity = item.quantity || 1;
@@ -44,7 +56,13 @@ const Checkout = () => {
       return;
     }
 
+    if (!formData.firstName || !formData.streetAddress || !formData.city || !formData.phone || !formData.email) {
+      alert('❗ Please fill all required billing fields');
+      return;
+    }
+
     const orderData = {
+      customerInfo: formData,
       cartItems: cartItems.map((item) => ({
         title: item.title,
         price: item.price,
@@ -58,12 +76,21 @@ const Checkout = () => {
       createdAt: Timestamp.now(),
     };
 
-    console.log('📦 Saving order:', orderData);
-
     try {
       await addDoc(collection(db, 'orders'), orderData);
       alert('✅ Order placed successfully!');
       dispatch(clearCart());
+      setFormData({
+        firstName: '',
+        companyName: '',
+        streetAddress: '',
+        apartment: '',
+        city: '',
+        phone: '',
+        email: '',
+      });
+      setCoupon('');
+      setDiscount(0);
     } catch (error) {
       console.error('❌ Firebase Error:', error);
       alert('Failed to place order. See console for error.');
@@ -76,39 +103,30 @@ const Checkout = () => {
       <div className="w-full lg:w-2/3">
         <h2 className="text-2xl font-semibold mb-6">Billing Details</h2>
         <form className="space-y-4">
-          {[{
-            label: 'First Name', required: true
-          }, {
-            label: 'Company Name'
-          }, {
-            label: 'Street Address', required: true
-          }, {
-            label: 'Apartment, floor, etc. (optional)'
-          }, {
-            label: 'Town/City', required: true
-          }, {
-            label: 'Phone Number', required: true, type: 'tel'
-          }, {
-            label: 'Email Address', required: true, type: 'email'
-          }].map((field, idx) => (
+          {[
+            { label: 'First Name', name: 'firstName', required: true },
+            { label: 'Company Name', name: 'companyName' },
+            { label: 'Street Address', name: 'streetAddress', required: true },
+            { label: 'Apartment, floor, etc. (optional)', name: 'apartment' },
+            { label: 'Town/City', name: 'city', required: true },
+            { label: 'Phone Number', name: 'phone', type: 'tel', required: true },
+            { label: 'Email Address', name: 'email', type: 'email', required: true },
+          ].map((field, idx) => (
             <div key={idx}>
               <label className="block mb-1 font-medium">
                 {field.label}
                 {field.required && <span className="text-red-500">*</span>}
               </label>
               <input
+                name={field.name}
                 type={field.type || 'text'}
                 required={field.required}
+                value={formData[field.name]}
+                onChange={handleInputChange}
                 className="w-[80%] p-2 bg-[#F5F5F5] rounded"
               />
             </div>
           ))}
-          <div className="flex items-center mt-2">
-            <input type="checkbox" id="save" className="mr-2" />
-            <label htmlFor="save" className="text-sm">
-              Save this info for next time
-            </label>
-          </div>
         </form>
       </div>
 
@@ -130,9 +148,7 @@ const Checkout = () => {
                   <div>
                     <p className="font-medium">{item.title}</p>
                     {item.originalPrice && (
-                      <p className="text-sm line-through text-gray-400">
-                        ${item.originalPrice}
-                      </p>
+                      <p className="text-sm line-through text-gray-400">${item.originalPrice}</p>
                     )}
                     <p className="text-sm text-gray-500">Qty: {item.quantity || 1}</p>
                   </div>
@@ -145,7 +161,7 @@ const Checkout = () => {
           )}
         </div>
 
-        {/* Pricing */}
+        {/* Pricing Summary */}
         {cartItems?.length > 0 && (
           <>
             <div className="border-t pt-4 space-y-2">
@@ -187,7 +203,7 @@ const Checkout = () => {
               </button>
             </div>
 
-            {/* Payment Options */}
+            {/* Payment Method */}
             <div className="space-y-2">
               <label className="flex items-center gap-2">
                 <input
@@ -199,7 +215,6 @@ const Checkout = () => {
                 />
                 Cash on Delivery
               </label>
-
               <label className="flex items-center gap-2">
                 <input
                   type="radio"
@@ -235,6 +250,7 @@ const Checkout = () => {
               )}
             </div>
 
+            {/* Submit Order */}
             <button
               onClick={handlePlaceOrder}
               className="w-[40%] hover:bg-black bg-[#DB4444] text-white py-3 rounded font-medium"
