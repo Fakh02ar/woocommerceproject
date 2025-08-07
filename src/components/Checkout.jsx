@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { clearCart } from '../features/cartSlice'; // Make sure path is correct
+import { clearCart } from '../features/cartSlice';
+
+import { db } from '../firebase'; // ✅ Firebase config
+import { collection, addDoc, Timestamp } from 'firebase/firestore';
 
 const Checkout = () => {
   const cartItems = useSelector((state) => state.cart.cartItems);
@@ -8,6 +11,7 @@ const Checkout = () => {
 
   const [discount, setDiscount] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState('cod');
+  const [coupon, setCoupon] = useState('');
 
   useEffect(() => {
     console.log('🛒 Checkout Page - cartItems from Redux:', cartItems);
@@ -34,19 +38,36 @@ const Checkout = () => {
     }
   };
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     if (!cartItems || cartItems.length === 0) {
       alert('🛒 Your cart is empty!');
       return;
     }
 
-    if (paymentMethod === 'online') {
-      alert('💳 Online payment processed! (Demo)');
-    } else {
-      alert('✅ Order placed with Cash on Delivery!');
-    }
+    const orderData = {
+      cartItems: cartItems.map((item) => ({
+        title: item.title,
+        price: item.price,
+        quantity: item.quantity || 1,
+        image: item.image,
+      })),
+      subtotal,
+      discount,
+      total,
+      paymentMethod,
+      createdAt: Timestamp.now(),
+    };
 
-    dispatch(clearCart());
+    console.log('📦 Saving order:', orderData);
+
+    try {
+      await addDoc(collection(db, 'orders'), orderData);
+      alert('✅ Order placed successfully!');
+      dispatch(clearCart());
+    } catch (error) {
+      console.error('❌ Firebase Error:', error);
+      alert('Failed to place order. See console for error.');
+    }
   };
 
   return (
@@ -55,15 +76,21 @@ const Checkout = () => {
       <div className="w-full lg:w-2/3">
         <h2 className="text-2xl font-semibold mb-6">Billing Details</h2>
         <form className="space-y-4">
-          {[
-            { label: 'First Name', required: true },
-            { label: 'Company Name' },
-            { label: 'Street Address', required: true },
-            { label: 'Apartment, floor, etc. (optional)' },
-            { label: 'Town/City', required: true },
-            { label: 'Phone Number', required: true, type: 'tel' },
-            { label: 'Email Address', required: true, type: 'email' },
-          ].map((field, idx) => (
+          {[{
+            label: 'First Name', required: true
+          }, {
+            label: 'Company Name'
+          }, {
+            label: 'Street Address', required: true
+          }, {
+            label: 'Apartment, floor, etc. (optional)'
+          }, {
+            label: 'Town/City', required: true
+          }, {
+            label: 'Phone Number', required: true, type: 'tel'
+          }, {
+            label: 'Email Address', required: true, type: 'email'
+          }].map((field, idx) => (
             <div key={idx}>
               <label className="block mb-1 font-medium">
                 {field.label}
@@ -140,6 +167,24 @@ const Checkout = () => {
                 <span>Total:</span>
                 <span>${total.toFixed(2)}</span>
               </div>
+            </div>
+
+            {/* Coupon */}
+            <div className="flex gap-2 items-center">
+              <input
+                type="text"
+                placeholder="Enter coupon"
+                value={coupon}
+                onChange={(e) => setCoupon(e.target.value)}
+                className="w-full p-2 rounded border"
+              />
+              <button
+                type="button"
+                onClick={applyCoupon}
+                className="bg-black text-white px-4 py-2 rounded"
+              >
+                Apply
+              </button>
             </div>
 
             {/* Payment Options */}
