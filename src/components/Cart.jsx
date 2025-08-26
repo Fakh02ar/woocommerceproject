@@ -37,7 +37,7 @@ const Cart = () => {
                 <div className="flex items-center gap-4 col-span-2 mb-4 md:mb-0">
                   <button
                     onClick={() => dispatch(removeFromCart(item.id))}
-                    className="text-red-600 font-bold hover:scale-110 transition"
+                    className="text-red-600 font-bold hover:scale-110 transition cursor-pointer"
                   >
                     ❌
                   </button>
@@ -93,7 +93,7 @@ const Cart = () => {
               <span>${totalPrice.toFixed(2)}</span>
             </div>
             <a href="/checkout" >
-              <button className="bg-red-500 hover:bg-red-600 text-white w-full py-3 rounded-lg text-sm md:text-base transition">
+              <button className="bg-red-500 hover:bg-red-600 text-white w-full py-3 rounded-lg text-sm md:text-base transition cursor-pointer">
                 Proceed to checkout
               </button>
             </a>
